@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard - Premium Users Total Expenses</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Premium Users Total Expenses</h2>
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Name</th>
+          <th>Total Expenses</th>
+        </tr>
+      </thead>
+      <tbody id="expenseData">
+        <!-- Data will be populated here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // Fetch leaderboard data from the server and populate the table
+    async function fetchLeaderboard() {
+      const token = localStorage.getItem('token');  // Get the JWT token from localStorage
+      if (!token) {
+        alert('Please login to view the leaderboard');
+        return;
+      }
+      try {
+        const response = await axios.get('/leaderboard', {
+          headers: {
+            'Authorization': `Bearer ${token}`  // Add token to the request header
+          }
+        });
+        const tableBody = document.getElementById('expenseData');
+        response.data.forEach(row => {
+            const amount=Number(row.total_expenses);
+          const tableRow = document.createElement('tr');
+          tableRow.innerHTML = `<td>${row.name}</td><td>${amount}</td>`;
+          tableBody.appendChild(tableRow);
+        });
+      } catch (error) {
+        console.error('Error fetching leaderboard data:', error);
+        const errorMessage = error.response?.data?.message;
+                alert(errorMessage);
+      }
+    }
+    fetchLeaderboard();
+  </script>
+
+</body>
+</html>
